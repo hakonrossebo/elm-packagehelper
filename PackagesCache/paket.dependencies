@@ -1,0 +1,4 @@
+source https://api.nuget.org/v3/index.json
+
+nuget FSharp.Core
+nuget FSharp.Data 3.0.0-beta4 beta
