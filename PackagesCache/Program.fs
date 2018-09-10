@@ -30,5 +30,8 @@ let getLastRelease v =
 let main argv =
     // let wc = new WebClient()
     // wc.DownloadFile("https://package.elm-lang.org/packages/krisajenkins/remotedata/latest/docs.json", @"c:\temp\remotedatadocs.json")
-    Seq.iter (fun (k, v)  -> printfn "%s - %s" k (getLastRelease v)) allPackages'
+    // Seq.iter (fun (k, v)  -> printfn "%s - %s" k (getLastRelease v)) allPackages'
+    allPackages'
+    |> Seq.map (fun (k, v)  -> (k, (getLastRelease v)))
+    |> Seq.iter (fun (name, release) -> printfn "%s - %s" name release)
     0
