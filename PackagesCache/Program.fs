@@ -11,10 +11,19 @@ let packagesAndLastVersion = packages
                             |> Seq.take 5
 
 
+
+let downloadFile (wc: WebClient) localBasePath (packageName, packageVersion) =
+    let downloadPath = sprintf "https://package.elm-lang.org/packages/%s/%s/docs.json" packageName packageVersion 
+    let localPath = sprintf @"%s\%s\%s\docs.json" localBasePath packageName packageVersion
+    // wc.DownloadFile(downloadPath, @"c:\temp\remotedatadocs.json")
+    printfn "Download from %s - save to %s" downloadPath localPath
+    |> ignore
+
+
 [<EntryPoint>]
 let main argv =
-    // let wc = new WebClient()
-    // wc.DownloadFile("https://package.elm-lang.org/packages/krisajenkins/remotedata/latest/docs.json", @"c:\temp\remotedatadocs.json")
+    let wc = new WebClient()
+    let downloadFilePrep = downloadFile wc @"c:\temp\elm-packageinfo"
     packagesAndLastVersion
-    |> Seq.iter (fun (name, release) -> printfn "%s - %s" name release)
+    |> Seq.iter downloadFilePrep
     0
