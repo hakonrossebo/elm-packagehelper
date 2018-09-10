@@ -1,10 +1,28 @@
 ﻿open System.Net;
 open FSharp.Data;
 
-type AllPackages = JsonProvider<"data/all-packages.json">
-let packages = AllPackages.GetSample()
+let allPackages = JsonValue.Load(__SOURCE_DIRECTORY__ + "/data/all-packages.json")
 
-let x = packages.``1602ElmFeather``.Strings
+let allPackages' = allPackages.Properties()
+
+
+let countReleases v = 
+    match v with
+    | JsonValue.Array arr ->
+        Array.length arr
+    | _ -> 0
+
+let getLastRelease v = 
+    match v with
+    | JsonValue.Array arr ->
+        let last = 
+            arr |> Array.last
+        match last with 
+        | JsonValue.String str ->
+            str 
+        | _ -> "Verson not a string"
+    | _ -> "No version"
+
 
 
 
@@ -12,5 +30,5 @@ let x = packages.``1602ElmFeather``.Strings
 let main argv =
     // let wc = new WebClient()
     // wc.DownloadFile("https://package.elm-lang.org/packages/krisajenkins/remotedata/latest/docs.json", @"c:\temp\remotedatadocs.json")
-    x.Length |> printfn "%d"
+    Seq.iter (fun (k, v)  -> printfn "%s - %s" k (getLastRelease v)) allPackages'
     0
