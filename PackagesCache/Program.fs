@@ -1,6 +1,8 @@
 ﻿open System.Net;
 open FSharp.Data;
 open FileHandling
+open System.IO;
+open System.Threading;
 
 
 type SearchJsonPackages = JsonProvider<"data/search.json">
@@ -16,22 +18,25 @@ let getPackageInfo (name:string) (versions:string array) =
 let packagesAndLastVersion (packages: SearchJsonPackages.Root []) = 
                             packages
                             |> Seq.map (fun x -> (getPackageInfo x.Name x.Versions.Strings))
-                            |> Seq.take 30
+                            // |> Seq.take 9
 
-// Plan: Get a list of package docs to download.
 
-let downloadFile (wc: WebClient) localBasePath (packageName, packageVersion) =
-    let downloadPath = sprintf "https://package.elm-lang.org/packages/%s/%s/docs.json" packageName packageVersion
-    let localPath = sprintf @"%s\%s\%s\docs.json" localBasePath packageName packageVersion
-    printfn "Download from %s - save to %s" downloadPath localPath
+let downloadFile (wc: WebClient) rootPath (packageVendor, packageName, packageVersion) =
+    let downloadPath = sprintf "https://package.elm-lang.org/packages/%s/%s/%s/docs.json" packageVendor packageName packageVersion
+    let localFileName = sprintf @"%s___%s___%s___docs.json" packageVendor packageName packageVersion
+    let localFileFullPath = Path.Combine(rootPath, localFileName)
+    printfn "Download from %s - save to %s" downloadPath localFileFullPath
     |> ignore
+    wc.DownloadFile(downloadPath,localFileFullPath)
+    Thread.Sleep(1000) // Don't put too much pressure on the server
     
 
 
 [<EntryPoint>]
 let main argv =
+    let rootPath = @"c:\temp\elm-packageinfo"
     let wc = new WebClient()
-    let downloadFilePrep = downloadFile wc @"c:\temp\elm-packageinfo"
+    let downloadFile' = downloadFile wc rootPath
     let availablePackagesWithInfo =  
         availablePackages
         |> packagesAndLastVersion
@@ -46,5 +51,5 @@ let main argv =
         |> Set.toSeq
 
     packagesToDownload
-    |> Seq.iter (fun (x,y,z) -> printfn "%s / %s / %s" x y z )
+    |> Seq.iter downloadFile'
     0
