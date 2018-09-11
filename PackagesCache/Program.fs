@@ -10,33 +10,56 @@ let getDirectories path =
         // |> Seq.map (fun x -> x.Name)
 
 // Create a list of packageCreator/Name/Version based on a root folder
+let createVendorPath vendorName rootPath  : string =
+    Path.Combine(rootPath, vendorName)
 
-let getVendorPackageVersion rootPath vendorName packageName packageVersion : seq<string * string * string> =
-    let vendorPath = Path.Combine(rootPath, vendorName)
-    let packagePath = Path.Combine(vendorPath, packageName)
-    let packageVersionPath = Path.Combine(packagePath, packageVersion)
-    let file = Path.Combine(packageVersionPath, "docs.json")
+let createVendorPackagePath  packageName vendorPath: string =
+    Path.Combine(vendorPath, packageName)
+
+let createVendorPackageVersionPath  packageVersion vendorPackagePath: string =
+    Path.Combine(vendorPackagePath, packageVersion)
+
+let createDocsFilePath vendorPackageVersionPath : string =
+    Path.Combine(vendorPackageVersionPath, "docs.json")
+
+let getVendorPackageVersionWhenDocsExists rootPath vendorName packageName packageVersion : seq<string * string * string> =
+    let file = rootPath 
+            |> createVendorPath vendorName
+            |> createVendorPackagePath packageName
+            |> createVendorPackageVersionPath packageVersion
+            |> createDocsFilePath 
     let f = FileInfo(file)
     match f.Exists with
     | true ->
-        [("","","")] |> List.toSeq
+        [(vendorName, packageName, packageVersion)] |> List.toSeq
     | false ->
-        [("","","")] |> List.toSeq
+        [] |> List.toSeq
 
-let getVendorPackages rootPath vendorName : seq<string * string * string> =
+let getVendorPackageVersions rootPath vendorName vendorPackagePath (vendorPackageDirectoryInfo:DirectoryInfo) : seq<string * string * string> =
+    let vendorPackagePath = createVendorPackagePath vendorPackageDirectoryInfo.Name vendorPackagePath
+    let vendorPackageVersions = getDirectories vendorPackagePath
+    let packages = 
+        vendorPackageVersions
+        |> Seq.collect (fun vendorPackageVersion -> getVendorPackageVersionWhenDocsExists rootPath vendorName vendorPackageDirectoryInfo.Name vendorPackageVersion.Name)
+    packages
 
-    [("","","")] |> List.toSeq
+let getVendorPackages rootPath (vendor:DirectoryInfo) : seq<string * string * string> =
+    let vendorPath = createVendorPath vendor.Name rootPath
+    let vendorPackages = getDirectories vendorPath
+    let packages = 
+        vendorPackages
+        |> Seq.collect (fun vendorPackage -> getVendorPackageVersions rootPath vendor.Name vendorPath vendorPackage)
+    packages
 
-let getDownloadedPackagesWithVersion path : seq<string * string * string> =
-    let packageVendors = getDirectories path
-    packageVendors
-    |> Seq.map (fun vendor -> vendor)
 
-    [("","","")] |> List.toSeq
+let getDownloadedPackagesWithVersion rootPath : seq<string * string * string> =
+    let packageVendors = getDirectories rootPath
+    let packages = 
+        packageVendors
+        |> Seq.collect (fun vendor -> getVendorPackages rootPath vendor)
+    packages
 
 
-// let getDirectories2 path =
-//     Directory.EnumerateDirectories(path)
 
 type SearchJsonPackages = JsonProvider<"data/search.json">
 
@@ -64,4 +87,6 @@ let main argv =
     // |> Seq.iter downloadFilePrep
     // getDirectoryNames @"c:\"
     // |> Seq.iter (fun x -> printfn "%s" x)
+    getDownloadedPackagesWithVersion @"c:\temp\elm-packageinfo"
+    |> Seq.iter (fun (x,y,z) -> printfn "%s / %s / %s" x y z )
     0
