@@ -5,7 +5,8 @@ open System.IO;
 open System.Threading;
 
 
-type SearchJsonPackages = JsonProvider<"data/search.json">
+// type SearchJsonPackages = JsonProvider<"data/search.json">
+type SearchJsonPackages = JsonProvider<"https://package.elm-lang.org/search.json">
 
 let availablePackages = SearchJsonPackages.GetSamples()
 
@@ -15,7 +16,7 @@ let getPackageInfo (name:string) (versions:string array) =
     (nameInfo.[0], nameInfo.[1], Array.last versions)
 
 
-let packagesAndLastVersion (packages: SearchJsonPackages.Root []) = 
+let packagesAndLastVersion (packages: SearchJsonPackages.Root []) =
                             packages
                             |> Seq.map (fun x -> (getPackageInfo x.Name x.Versions.Strings))
                             // |> Seq.take 9
@@ -29,7 +30,7 @@ let downloadFile (wc: WebClient) rootPath (packageVendor, packageName, packageVe
     |> ignore
     wc.DownloadFile(downloadPath,localFileFullPath)
     Thread.Sleep(1000) // Don't put too much pressure on the server
-    
+
 
 
 [<EntryPoint>]
@@ -37,7 +38,7 @@ let main argv =
     let rootPath = @"c:\temp\elm-packageinfo"
     let wc = new WebClient()
     let downloadFile' = downloadFile wc rootPath
-    let availablePackagesWithInfo =  
+    let availablePackagesWithInfo =
         availablePackages
         |> packagesAndLastVersion
         |> set
