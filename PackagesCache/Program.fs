@@ -51,6 +51,9 @@ let main argv =
         Set.difference availablePackagesWithInfo downloadedpackagesWithInfo
         |> Set.toSeq
 
-    packagesToDownload
-    |> Seq.iter downloadFile'
+    // packagesToDownload
+    // |> Seq.iter downloadFile'
+    getFiles rootPath
+    |> groupByFilesWithMultipleVersions
+    |> Seq.iter (fun ((k,v), _) -> printfn "%s - %s" k v)
     0

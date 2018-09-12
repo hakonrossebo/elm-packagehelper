@@ -18,3 +18,9 @@ let parseFileInfoToPackageMetadata (fileInfo:FileInfo) : (string * string * stri
 let getDownloadedPackagesWithVersion rootPath : seq<string * string * string> =
     getFiles rootPath
     |> Seq.choose parseFileInfoToPackageMetadata
+
+let groupByFilesWithMultipleVersions (files:FileInfo seq) =
+    files
+    |> Seq.choose parseFileInfoToPackageMetadata
+    |> Seq.groupBy (fun (vendor, package, _) -> (vendor, package))
+    |> Seq.filter (fun (_, versions) -> Seq.length versions > 1)
