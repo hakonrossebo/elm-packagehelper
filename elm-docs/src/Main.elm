@@ -15,4 +15,4 @@ listModules =
 
 
 decodeElmCoreModules =
-    Json.Decode.decodeString (Json.Decode.list decoder) smallDocs
+    Json.Decode.decodeString (Json.Decode.list decoder) coreDocs
