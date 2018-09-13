@@ -1,6 +1,7 @@
 ﻿open System.Net;
 open FSharp.Data;
 open FileHandling
+open JsonCleanup;
 open System.IO;
 open System.Threading;
 
@@ -36,24 +37,27 @@ let downloadFile (wc: WebClient) rootPath (packageVendor, packageName, packageVe
 [<EntryPoint>]
 let main argv =
     let rootPath = @"c:\temp\elm-packageinfo"
+    let newRootPath = @"c:\temp\elm-packageinfo\clean"
     let wc = new WebClient()
     let downloadFile' = downloadFile wc rootPath
-    let availablePackagesWithInfo =
-        availablePackages
-        |> packagesAndLastVersion
-        |> set
+    // let availablePackagesWithInfo =
+    //     availablePackages
+    //     |> packagesAndLastVersion
+    //     |> set
 
-    let downloadedpackagesWithInfo =
-        getDownloadedPackagesWithVersion @"c:\temp\elm-packageinfo"
-        |> set
+    // let downloadedpackagesWithInfo =
+    //     getDownloadedPackagesWithVersion @"c:\temp\elm-packageinfo"
+    //     |> set
 
-    let packagesToDownload =
-        Set.difference availablePackagesWithInfo downloadedpackagesWithInfo
-        |> Set.toSeq
+    // let packagesToDownload =
+    //     Set.difference availablePackagesWithInfo downloadedpackagesWithInfo
+    //     |> Set.toSeq
 
     // packagesToDownload
     // |> Seq.iter downloadFile'
-    getFiles rootPath
-    |> groupByFilesWithMultipleVersions
-    |> Seq.iter (fun ((k,v), _) -> printfn "%s - %s" k v)
+
+    // getFiles rootPath
+    // |> groupByFilesWithMultipleVersions
+    // |> Seq.iter (fun ((k,v), _) -> printfn "%s - %s" k v)
+    cleanupAllFiles rootPath newRootPath
     0
