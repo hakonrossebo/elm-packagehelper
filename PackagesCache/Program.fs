@@ -38,8 +38,10 @@ let downloadFile (wc: WebClient) rootPath (packageVendor, packageName, packageVe
 let main argv =
     let rootPath = @"c:\temp\elm-packageinfo"
     let newRootPath = @"c:\temp\elm-packageinfo\clean"
+    let newFile = __SOURCE_DIRECTORY__ + @"/../elm-docs/src/AllElmDocs.elm"
+    let decoderFile = __SOURCE_DIRECTORY__ + @"/../elm-docs/src/AllElmDocsDecoders.elm"
     let wc = new WebClient()
-    let downloadFile' = downloadFile wc rootPath
+    // let downloadFile' = downloadFile wc rootPath
     // let availablePackagesWithInfo =
     //     availablePackages
     //     |> packagesAndLastVersion
@@ -59,5 +61,6 @@ let main argv =
     // getFiles rootPath
     // |> groupByFilesWithMultipleVersions
     // |> Seq.iter (fun ((k,v), _) -> printfn "%s - %s" k v)
-    cleanupAllFiles rootPath newRootPath
+    // cleanupAllFiles rootPath newRootPath
+    cleanupAllFilesToOneSource rootPath newFile decoderFile
     0

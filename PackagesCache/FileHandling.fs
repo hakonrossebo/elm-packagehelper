@@ -15,6 +15,14 @@ let parseFileInfoToPackageMetadata (fileInfo:FileInfo) : (string * string * stri
     with
     | Failure _ -> None
 
+let parseFileNameToPackageMetadata (fileInfo:string) : (string * string * string) option=
+    try
+        let fileNameParts = fileInfo.Split "___"
+        let parts = Some (fileNameParts.[0], fileNameParts.[1], fileNameParts.[2])
+        parts
+    with
+    | Failure _ -> None
+
 let getDownloadedPackagesWithVersion rootPath : seq<string * string * string> =
     getFiles rootPath
     |> Seq.choose parseFileInfoToPackageMetadata
