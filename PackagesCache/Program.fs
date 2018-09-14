@@ -68,4 +68,5 @@ let main argv =
     // cleanupAllFiles rootPath newRootPath
 
     cleanupAllFilesToOneSource rootPath newFile decoderFile
+    
     0

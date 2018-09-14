@@ -42,13 +42,15 @@ let cleanAndWriteToStream (textWriter:StreamWriter) (decoderFile:StreamWriter) n
 
         decoderFile.WriteLine (sprintf @"%s = Json.Decode.decodeString (Json.Decode.list decoder) %s" decoderSourcePackageName sourcePackageName)
         decoderFile.WriteLine ""
+        sprintf @"(""%s"", %s)" sourcePackageName decoderSourcePackageName
 
     | None ->
-        ()
+        ""
 
 let cleanupAllFiles rootPath newRootPath =
     getFiles rootPath
     |> Seq.iter (fun file -> cleanAndWriteFile file.Name file.FullName newRootPath)
+
 
 let cleanupAllFilesToOneSource rootPath (newFile:string) (decoderFile:string) =
     use textWriter = new StreamWriter(newFile)
@@ -62,5 +64,11 @@ let cleanupAllFilesToOneSource rootPath (newFile:string) (decoderFile:string) =
     decoderFile.WriteLine "import Generated.AllElmDocs exposing (..)"
 
     decoderFile.WriteLine ""
-    getFiles rootPath
-    |> Seq.iter (fun file -> cleanAndWriteToStream textWriter decoderFile file.Name file.FullName)
+    let decoderList = 
+        getFiles rootPath
+        |> Seq.map (fun file -> cleanAndWriteToStream textWriter decoderFile file.Name file.FullName)
+        |> Seq.reduce (fun acc newVal -> acc + ", " + newVal)
+        |> sprintf @"decoderList = [%s]"
+
+    decoderFile.WriteLine decoderList
+    ()
