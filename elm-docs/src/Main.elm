@@ -1,18 +1,19 @@
 module Main exposing (..)
 
-import Elm.Docs exposing (..)
+import Generated.AllElmDocsDecoders exposing (..)
 import Json.Decode exposing (..)
-import SmallDocs exposing (..)
 
 
-listModules =
-    case decodeElmCoreModules of
-        Ok modules ->
-            List.map (\x -> x.name) modules
-
-        Err err ->
-            [ Json.Decode.errorToString err ]
+searchModules searchArg =
+    decoderList
+        |> List.filter (\( packageName, _ ) -> String.contains searchArg packageName)
+        |> List.map (\( packageName, _ ) -> packageName)
 
 
-decodeElmCoreModules =
-    Json.Decode.decodeString (Json.Decode.list decoder) coreDocs
+
+-- listModules =
+--     case decode_p_elm_core of
+--         Ok modules ->
+--             List.map (\x -> x.name) modules
+--         Err err ->
+--             [ Json.Decode.errorToString err ]
