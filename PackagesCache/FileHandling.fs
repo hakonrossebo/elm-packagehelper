@@ -6,6 +6,12 @@ let getFiles path =
     files.EnumerateFiles()
     |> Seq.filter (fun file -> file.Extension = ".json")
 
+let deletePackage rootPath (packageVendor, packageName, packageVersion) =
+    let localFileName = sprintf @"%s___%s___%s___docs.json" packageVendor packageName packageVersion
+    let localFileFullPath = Path.Combine(rootPath, localFileName)
+    File.Delete localFileFullPath
+    printfn "Deleted file: %s" localFileFullPath
+
 
 let parseFileInfoToPackageMetadata (fileInfo:FileInfo) : (string * string * string) option=
     try
@@ -27,8 +33,18 @@ let getDownloadedPackagesWithVersion rootPath : seq<string * string * string> =
     getFiles rootPath
     |> Seq.choose parseFileInfoToPackageMetadata
 
-let groupByFilesWithMultipleVersions (files:FileInfo seq) =
+let sortAndRemoveLastVersion (versions:(string * string * string) seq) = 
+    versions
+    |> Seq.sortByDescending (fun (_, _, version) -> version) 
+    |> Seq.tail
+
+
+let getOldPackageVersions (files:FileInfo seq) =
     files
     |> Seq.choose parseFileInfoToPackageMetadata
     |> Seq.groupBy (fun (vendor, package, _) -> (vendor, package))
     |> Seq.filter (fun (_, versions) -> Seq.length versions > 1)
+    |> Seq.map (fun (pKey, pVer) -> (pKey, sortAndRemoveLastVersion pVer))
+    |> Seq.collect (fun (_, pVer) -> pVer)
+
+// Funksjon som 1: sorterer versjoner, fjerner siste element, flater ut til en seq

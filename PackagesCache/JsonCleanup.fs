@@ -32,8 +32,8 @@ let cleanAndWriteToStream (textWriter:StreamWriter) (decoderFile:StreamWriter) n
     | Some (vendorName, packageName, _) ->
         let jsonFile = JsonValue.Load(fullPath)
         let cleanJson = cleanupComments jsonFile
-        let sourcePackageName = (vendorName.ToLower()) + "_" + packageName.Replace("-", "_")
-        let decoderSourcePackageName = "decode_" + (vendorName.ToLower()) + "_" + packageName.Replace("-", "_")
+        let sourcePackageName = "p_" + (vendorName.ToLower().Replace("-", "_")) + "_" + packageName.Replace("-", "_")
+        let decoderSourcePackageName = "decode_" + sourcePackageName
         let packageNameLine = sprintf @"%s = """""" " sourcePackageName
         textWriter.WriteLine packageNameLine
         cleanJson.WriteTo (textWriter, JsonSaveOptions.DisableFormatting)
@@ -52,12 +52,15 @@ let cleanupAllFiles rootPath newRootPath =
 
 let cleanupAllFilesToOneSource rootPath (newFile:string) (decoderFile:string) =
     use textWriter = new StreamWriter(newFile)
-    textWriter.WriteLine "module AllElmDocs exposing (..)"
+    textWriter.WriteLine "module Generated.AllElmDocs exposing (..)"
     textWriter.WriteLine ""
     use decoderFile = new StreamWriter(decoderFile)
-    decoderFile.WriteLine "module AllElmDocsDecoders exposing (..)"
+    decoderFile.WriteLine "module Generated.AllElmDocsDecoders exposing (..)"
     decoderFile.WriteLine ""
-    decoderFile.WriteLine "import AllElmDocs exposing (..)"
+    decoderFile.WriteLine "import Json.Decode exposing (..)"
+    decoderFile.WriteLine "import Elm.Docs exposing (..)"
+    decoderFile.WriteLine "import Generated.AllElmDocs exposing (..)"
+
     decoderFile.WriteLine ""
     getFiles rootPath
     |> Seq.iter (fun file -> cleanAndWriteToStream textWriter decoderFile file.Name file.FullName)
