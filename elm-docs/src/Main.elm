@@ -21,10 +21,43 @@ type
     | NotFound String
 
 
+help =
+    [ "Commands/Functions to run:", "getAllPackageModules", "getPackageModuleValues packageName moduleName", "getPackageInfo packageName" ]
+
+
 decodeAllModules =
     decoderList
         |> List.map (\( packageName, packageDecoder ) -> ( packageName, packageDecoder ))
         |> List.length
+
+
+getAllPackageModules =
+    decoderList
+        |> List.map runDecoder
+
+
+getPackageModuleValues findPackageName findModule =
+    let
+        matchingPackages =
+            decoderList
+                |> List.filter (\( packageName, _ ) -> String.contains findPackageName packageName)
+
+        package =
+            case List.length matchingPackages of
+                0 ->
+                    NotFound "Could not find any matching packages"
+
+                1 ->
+                    matchingPackages
+                        |> List.head
+                        |> decodeIfFound (runDecoderAndFindModule findModule)
+
+                _ ->
+                    matchingPackages
+                        |> List.map (\( packageName, _ ) -> packageName)
+                        |> MultipleFound "Found multiple matching packages"
+    in
+    package
 
 
 getPackageInfo findPackageName =
@@ -41,7 +74,7 @@ getPackageInfo findPackageName =
                 1 ->
                     matchingPackages
                         |> List.head
-                        |> decodeIfFound
+                        |> decodeIfFound runDecoder
 
                 _ ->
                     matchingPackages
@@ -51,10 +84,10 @@ getPackageInfo findPackageName =
     package
 
 
-decodeIfFound maybeDecoder =
+decodeIfFound runner maybeDecoder =
     case maybeDecoder of
         Just packageInfo ->
-            runDecoder packageInfo
+            runner packageInfo
 
         Nothing ->
             FoundEmptyList
@@ -66,6 +99,19 @@ runDecoder ( packageName, decoder ) =
             modules
                 |> List.map (\packageModule -> packageModule.name)
                 |> Found packageName "Modules:"
+
+        Err err ->
+            FoundWithDecoderError (Json.Decode.errorToString err)
+
+
+runDecoderAndFindModule findModule ( packageName, decoder ) =
+    case decoder of
+        Ok modules ->
+            modules
+                |> List.filter (\packageModule -> packageModule.name == findModule)
+                |> List.concatMap (\packageModule -> packageModule.values)
+                |> List.map (\packageValue -> packageValue.name)
+                |> Found (packageName ++ findModule) "Modules:"
 
         Err err ->
             FoundWithDecoderError (Json.Decode.errorToString err)
