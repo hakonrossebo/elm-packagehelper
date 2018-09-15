@@ -42,7 +42,7 @@ let cleanAndWriteToStream (textWriter:StreamWriter) (decoderFile:StreamWriter) n
 
         decoderFile.WriteLine (sprintf @"%s = Json.Decode.decodeString (Json.Decode.list decoder) %s" decoderSourcePackageName sourcePackageName)
         decoderFile.WriteLine ""
-        sprintf @"(""%s"", %s)" sourcePackageName decoderSourcePackageName
+        sprintf @"(""%s/%s"", %s)" vendorName packageName decoderSourcePackageName
 
     | None ->
         ""
