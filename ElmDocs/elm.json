@@ -1,5 +1,8 @@
 {
     "type": "application",
+    "summary": "A meta package to be used to look up package docs from REPL",
+    "license": "MIT",
+    "version": "1.0.0",
     "source-directories": [
         "src"
     ],
