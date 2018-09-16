@@ -35,8 +35,8 @@ type ItemInfo
 
 {-| Get available functions to run when using REPL
 
-> import ElmDocs exposing (..)
-> help
+    import ElmDocs exposing (..)
+    help
 
 -}
 help : List String
@@ -46,8 +46,8 @@ help =
 
 {-| Search all package module values/unions/aliases
 
-> import ElmDocs exposing (..)
-> search "sqrt"
+    import ElmDocs exposing (..)
+    search "sqrt"
 
 -}
 search : String -> ( String, List Location )
@@ -72,8 +72,8 @@ search searchFor =
 
 {-| Get a list of all package modules - Generates a long list in REPL
 
-> import ElmDocs exposing (..)
-> getAllPackageModules
+    import ElmDocs exposing (..)
+    getAllPackageModules
 
 -}
 getAllPackageModules : List FindPackageResult
@@ -85,8 +85,8 @@ getAllPackageModules =
 {-| Get a list of all values for a specific module in a package
 run getPackageInfo "packageVendor/packageName" first to get a list of available modules
 
-> import ElmDocs exposing (..)
-> getPackageModuleValues "elm/core" "List"
+    import ElmDocs exposing (..)
+    getPackageModuleValues "elm/core" "List"
 
 -}
 getPackageModuleValues : String -> String -> FindPackageResult
@@ -116,8 +116,8 @@ getPackageModuleValues findPackageName findModule =
 
 {-| Get a list of all modues in a package
 
-> import ElmDocs exposing (..)
-> getPackageInfo "elm/core"
+    import ElmDocs exposing (..)
+    getPackageInfo "elm/core"
 
 -}
 getPackageInfo : String -> FindPackageResult
