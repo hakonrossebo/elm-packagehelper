@@ -3,8 +3,8 @@ open FSharp.Data;
 open System.IO;
 open FileHandling;
 
-let newFile = __SOURCE_DIRECTORY__ + @"/../../ElmDocs/src/Generated/AllElmDocs.elm"
-let decoderFile = __SOURCE_DIRECTORY__ + @"/../../ElmDocs/src/Generated/AllElmDocsDecoders.elm"
+let newFile = __SOURCE_DIRECTORY__ + @"/../../src/Generated/AllElmDocs.elm"
+let decoderFile = __SOURCE_DIRECTORY__ + @"/../../src/Generated/AllElmDocsDecoders.elm"
 
 let rec cleanupComments json =
     match json with
