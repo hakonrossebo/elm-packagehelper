@@ -25,7 +25,6 @@ The project consist of an Elm package to be used in REPL and a F# project to dow
 
 ## Todo
 
-* Prepare and release as package on Elm Packages
 * Automate creation of packages to ElmDocs package daily
 * Refactoring and improvements
 * Help, contributions and suggestions wanted, this is experimental on this stage. Functions and results can change.
