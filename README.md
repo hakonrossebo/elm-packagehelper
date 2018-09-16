@@ -6,7 +6,7 @@ The project consist of an Elm package to be used in REPL and a F# project to dow
 
 ## Usage
 
-1. add the package to your project >elm install hakonrossebo/elmdocs (NB! not released yet)
+1. add the package to your project >elm install hakonrossebo/elmdocs
 2. Start Elm repl >elm repl
 3. run the help function to get suggestions on usage >help
 
@@ -20,7 +20,8 @@ The project consist of an Elm package to be used in REPL and a F# project to dow
 
 ## Screenshot from REPL
 
-![alt text](ElmDocsScreenshot.png)
+![Image of REPL usage](https://raw.githubusercontent.com/hakonrossebo/elmdocs/master/ElmDocsScreenshot.png)
+9i
 
 ## Todo
 
