@@ -39,6 +39,7 @@ type ItemInfo
 > help
 
 -}
+help : List String
 help =
     [ "Commands/Functions to run:", "search searchFor", "getAllPackageModules", "getPackageModuleValues packageName moduleName", "getPackageInfo packageName" ]
 
@@ -49,7 +50,7 @@ help =
 > search "sqrt"
 
 -}
-search : String -> List Location
+search : String -> ( String, List Location )
 search searchFor =
     let
         searchResults =
@@ -60,13 +61,13 @@ search searchFor =
             List.length searchResults
     in
     if searchResultLength == 0 then
-        Debug.log "No results" searchResults
+        ( "Not found", [] )
 
     else if searchResultLength <= 20 then
-        Debug.log "Results:" searchResults
+        ( "Found", searchResults )
 
     else
-        Debug.log "More than 20 results. Please narrow search." (searchResults |> List.take 20)
+        ( "More than 20 results. Please narrow search.", searchResults |> List.take 20 )
 
 
 {-| Get a list of all package modules - Generates a long list in REPL
@@ -75,6 +76,7 @@ search searchFor =
 > getAllPackageModules
 
 -}
+getAllPackageModules : List FindPackageResult
 getAllPackageModules =
     decoderList
         |> List.map runDecoder
@@ -87,6 +89,7 @@ run getPackageInfo "packageVendor/packageName" first to get a list of available 
 > getPackageModuleValues "elm/core" "List"
 
 -}
+getPackageModuleValues : String -> String -> FindPackageResult
 getPackageModuleValues findPackageName findModule =
     let
         matchingPackages =
@@ -117,6 +120,7 @@ getPackageModuleValues findPackageName findModule =
 > getPackageInfo "elm/core"
 
 -}
+getPackageInfo : String -> FindPackageResult
 getPackageInfo findPackageName =
     let
         matchingPackages =
