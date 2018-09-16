@@ -5,9 +5,9 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="FileHandling.fs" />
-    <Compile Include="JsonCleanup.fs" />
-    <Compile Include="Program.fs" />
+    <Compile Include="src/FileHandling.fs" />
+    <Compile Include="src/ElmFileGenerator.fs" />
+    <Compile Include="src/Program.fs" />
   </ItemGroup>
   <Import Project=".paket\Paket.Restore.targets" />
   <ItemGroup>
