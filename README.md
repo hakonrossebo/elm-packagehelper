@@ -18,7 +18,7 @@ The project consist of an Elm package to be used in REPL and a F# project to dow
 * getAllPackageModules
 
 ## Screenshot from REPL
-![alt text](elm-docs/ElmDocsScreenshot.png)
+![alt text](ElmDocs/ElmDocsScreenshot.png)
 ## Todo
 
 * Prepare and release as package on Elm Packages
