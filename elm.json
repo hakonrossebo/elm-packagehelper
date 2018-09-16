@@ -3,7 +3,7 @@
     "name": "hakonrossebo/elmdocs",
     "summary": "A meta package to be used to look up package docs from REPL",
     "license": "MIT",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "exposed-modules": [
         "ElmDocs"
     ],
