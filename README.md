@@ -21,7 +21,6 @@ The project consist of an Elm package to be used in REPL and a F# project to dow
 ## Screenshot from REPL
 
 ![Image of REPL usage](https://raw.githubusercontent.com/hakonrossebo/elmdocs/master/ElmDocsScreenshot.png)
-9i
 
 ## Todo
 
