@@ -1,6 +1,10 @@
-module ElmDocs exposing (help, getPackageInfo, getPackageModuleValues, search, getAllPackageModules)
+module ElmDocs exposing
+    ( help, getPackageInfo, getPackageModuleValues, search, getAllPackageModules
+    , searchType
+    )
 
-{-| A helper package to be used in elm REPL
+{-| A helper package to be used in elm REPL. By importing this package you can search all available
+Elm packages directly from the REPL.
 
 
 # Usage
@@ -10,6 +14,7 @@ module ElmDocs exposing (help, getPackageInfo, getPackageModuleValues, search, g
 -}
 
 import Elm.Docs
+import Elm.Type
 import Generated.AllElmDocsDecoders exposing (..)
 import Json.Decode exposing (..)
 
@@ -22,8 +27,14 @@ type FindPackageResult
     | NotFound String
 
 
+type SearchType
+    = TextSearch String
+    | TypeSearch Elm.Type.Type
+
+
 type Location
     = Location String ( String, String )
+    | TypeLocation Elm.Type.Type String ( String, String )
 
 
 type ItemInfo
@@ -53,9 +64,12 @@ help =
 search : String -> ( String, List Location )
 search searchFor =
     let
+        parsedSearchFor =
+            parseSearchFor searchFor
+
         searchResults =
-            indexAllModules
-                |> List.filter (filterLocation searchFor)
+            indexAllModulesFields
+                |> List.filter (filterLocation parsedSearchFor)
 
         searchResultLength =
             List.length searchResults
@@ -68,6 +82,19 @@ search searchFor =
 
     else
         ( "More than 20 results. Please narrow search.", searchResults |> List.take 20 )
+
+
+{-| Search all package module values/unions/aliases for a type signature
+
+    import ElmDocs exposing (..)
+    searchType "a - a"
+    searchType "Basics.Int -> Basics.Float"
+
+-}
+searchType : String -> ( String, List Location )
+searchType searchFor =
+    String.concat [ "\"", searchFor, "\"" ]
+        |> search
 
 
 {-| Get a list of all package modules - Generates a long list in REPL
@@ -178,17 +205,29 @@ runDecoderAndFindModule findModule ( packageName, decoder ) =
             FoundWithDecoderError (Json.Decode.errorToString err)
 
 
-filterLocation : String -> Location -> Bool
+filterLocation : SearchType -> Location -> Bool
 filterLocation searchForValue location =
     case location of
         Location loc _ ->
-            String.contains searchForValue loc
+            case searchForValue of
+                TextSearch textSearchForValue ->
+                    String.contains textSearchForValue loc
+
+                _ ->
+                    False
+
+        TypeLocation loc _ _ ->
+            case searchForValue of
+                TypeSearch typeSearchForValue ->
+                    loc == typeSearchForValue
+
+                _ ->
+                    False
 
 
 getSearchableFieldsInPackageModule : String -> Elm.Docs.Module -> List Location
 getSearchableFieldsInPackageModule packageName packageModule =
     let
-        -- TODO: Need to parse tipe to some searchable value
         moduleName =
             packageModule.name
 
@@ -198,7 +237,7 @@ getSearchableFieldsInPackageModule packageName packageModule =
 
         valueFields =
             packageModule.values
-                |> List.concatMap (\moduleValue -> [ Location moduleValue.name ( packageName, moduleName ) ])
+                |> List.concatMap (\moduleValue -> [ Location moduleValue.name ( packageName, moduleName ), TypeLocation moduleValue.tipe moduleValue.name ( packageName, moduleName ) ])
     in
     aliasFields ++ valueFields
 
@@ -210,7 +249,7 @@ getSearchableFieldsInPackage ( packageName, packageDecoder ) =
         |> Result.withDefault []
 
 
-indexAllModules =
+indexAllModulesFields =
     decoderList
         |> List.concatMap getSearchableFieldsInPackage
 
@@ -219,3 +258,13 @@ decodeAllModules =
     decoderList
         |> List.map (\( packageName, packageDecoder ) -> ( packageName, packageDecoder ))
         |> List.length
+
+
+parseSearchFor : String -> SearchType
+parseSearchFor searchFor =
+    case Json.Decode.decodeString Elm.Type.decoder searchFor of
+        Ok searchForType ->
+            TypeSearch searchForType
+
+        _ ->
+            TextSearch searchFor
