@@ -1,7 +1,4 @@
-module ElmDocs exposing
-    ( help, getPackageInfo, getPackageModuleValues, search, getAllPackageModules
-    , searchType
-    )
+module ElmDocs exposing (help, getPackageInfo, getPackageModuleValues, search, searchType, getAllPackageModules)
 
 {-| A helper package to be used in elm REPL. By importing this package you can search all available
 Elm packages directly from the REPL.
@@ -9,7 +6,7 @@ Elm packages directly from the REPL.
 
 # Usage
 
-@docs help, getPackageInfo, getPackageModuleValues, search, getAllPackageModules
+@docs help, getPackageInfo, getPackageModuleValues, search, searchType, getAllPackageModules
 
 -}
 
