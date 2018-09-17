@@ -52,7 +52,7 @@ type ItemInfo
 -}
 help : List String
 help =
-    [ "Commands/Functions to run:", "search searchFor", "getAllPackageModules", "getPackageModuleValues packageName moduleName", "getPackageInfo packageName" ]
+    [ "Commands/Functions to run:", "search searchFor", "searchType type", "getAllPackageModules", "getPackageModuleValues packageName moduleName", "getPackageInfo packageName" ]
 
 
 {-| Search all package module values/unions/aliases
@@ -77,11 +77,11 @@ search searchFor =
     if searchResultLength == 0 then
         ( "Not found", [] )
 
-    else if searchResultLength <= 20 then
+    else if searchResultLength <= 50 then
         ( "Found", searchResults )
 
     else
-        ( "More than 20 results. Please narrow search.", searchResults |> List.take 20 )
+        ( "More than 50 results. Please narrow search.", searchResults |> List.take 50 )
 
 
 {-| Search all package module values/unions/aliases for a type signature
@@ -225,6 +225,29 @@ filterLocation searchForValue location =
                     False
 
 
+getSearchableFieldsForUnionType : String -> String -> String -> ( String, List Elm.Type.Type ) -> List Location
+getSearchableFieldsForUnionType packageName moduleName unionName ( unionTypeName, unionTypeTypes ) =
+    unionTypeTypes
+        |> List.concatMap (\unionTypeType -> [ TypeLocation unionTypeType (unionName ++ " - " ++ unionTypeName) ( packageName, moduleName ) ])
+
+
+getSearchableFieldsForUnion : String -> String -> Elm.Docs.Union -> List Location
+getSearchableFieldsForUnion packageName moduleName union =
+    let
+        name =
+            [ Location union.name ( packageName, moduleName ) ]
+
+        args =
+            union.args
+                |> List.concatMap (\arg -> [ Location (union.name ++ " - " ++ arg) ( packageName, moduleName ) ])
+
+        unionTypes =
+            union.tags
+                |> List.concatMap (getSearchableFieldsForUnionType packageName moduleName union.name)
+    in
+    name ++ args ++ unionTypes
+
+
 getSearchableFieldsInPackageModule : String -> Elm.Docs.Module -> List Location
 getSearchableFieldsInPackageModule packageName packageModule =
     let
@@ -233,13 +256,21 @@ getSearchableFieldsInPackageModule packageName packageModule =
 
         aliasFields =
             packageModule.aliases
-                |> List.concatMap (\moduleAlias -> [ Location moduleAlias.name ( packageName, moduleName ) ])
+                |> List.concatMap (\moduleAlias -> [ Location moduleAlias.name ( packageName, moduleName ), TypeLocation moduleAlias.tipe moduleAlias.name ( packageName, moduleName ) ])
 
         valueFields =
             packageModule.values
                 |> List.concatMap (\moduleValue -> [ Location moduleValue.name ( packageName, moduleName ), TypeLocation moduleValue.tipe moduleValue.name ( packageName, moduleName ) ])
+
+        binopFields =
+            packageModule.values
+                |> List.concatMap (\moduleBinop -> [ Location moduleBinop.name ( packageName, moduleName ), TypeLocation moduleBinop.tipe moduleBinop.name ( packageName, moduleName ) ])
+
+        unionFields =
+            packageModule.unions
+                |> List.concatMap (getSearchableFieldsForUnion packageName moduleName)
     in
-    aliasFields ++ valueFields
+    aliasFields ++ valueFields ++ binopFields ++ unionFields
 
 
 getSearchableFieldsInPackage : ( String, Result Error (List Elm.Docs.Module) ) -> List Location
