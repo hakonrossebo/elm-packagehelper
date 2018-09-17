@@ -1,8 +1,9 @@
 
 # ElmDocs
 
-The intention with this project is to provide offline docs to be used in Elm Repl.
-The project consist of an Elm package to be used in REPL and a F# project to download all latest packages to a cache.
+The intention with this project is to provide offline docs to be used in Elm Repl. By importing this package into the REPL, you can search for all available Elm packages offline.
+
+The project consist of an Elm package to be used in REPL and a F# project to download all latest packages to a cache. The package is generated with the latest packages frequently and hopefully on a daily basis soon.
 
 ## Usage
 
@@ -16,6 +17,7 @@ The project consist of an Elm package to be used in REPL and a F# project to dow
 * getPackageInfo
 * getPackageModuleValues
 * search
+* searchType
 * getAllPackageModules
 
 ## Screenshot from REPL
