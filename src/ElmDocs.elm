@@ -225,7 +225,7 @@ filterLocation searchForValue location =
 getSearchableFieldsForUnionType : String -> String -> String -> ( String, List Elm.Type.Type ) -> List Location
 getSearchableFieldsForUnionType packageName moduleName unionName ( unionTypeName, unionTypeTypes ) =
     unionTypeTypes
-        |> List.concatMap (\unionTypeType -> [ TypeLocation unionTypeType (unionName ++ " - " ++ unionTypeName) ( packageName, moduleName ) ])
+        |> List.concatMap (\unionTypeType -> [ Location (unionName ++ " " ++ unionTypeName) ( packageName, moduleName ), TypeLocation unionTypeType (unionName ++ " " ++ unionTypeName) ( packageName, moduleName ) ])
 
 
 getSearchableFieldsForUnion : String -> String -> Elm.Docs.Union -> List Location
@@ -236,7 +236,7 @@ getSearchableFieldsForUnion packageName moduleName union =
 
         args =
             union.args
-                |> List.concatMap (\arg -> [ Location (union.name ++ " - " ++ arg) ( packageName, moduleName ) ])
+                |> List.concatMap (\arg -> [ Location (union.name ++ " " ++ arg) ( packageName, moduleName ) ])
 
         unionTypes =
             union.tags
