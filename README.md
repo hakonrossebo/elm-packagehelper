@@ -5,6 +5,8 @@ The intention with this project is to provide offline docs to be used in Elm Rep
 
 The project consist of an Elm package to be used in REPL and a F# project to download all latest packages to a cache. The package is generated with the latest packages frequently and hopefully on a daily basis soon.
 
+[![Build Status](https://dev.azure.com/hakonrossebodev/ElmDocs/_apis/build/status/hakonrossebo.elmdocs)](https://dev.azure.com/hakonrossebodev/ElmDocs/_build/latest?definitionId=1)
+
 ## Usage
 
 1. add the package to your project >elm install hakonrossebo/elmdocs
