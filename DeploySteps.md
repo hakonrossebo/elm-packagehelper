@@ -3,7 +3,9 @@
 Clone the project
 Navigate to ./PackagesCache
 Ensure dotnet core is installed with dotnet --version - needs 2.1.403
-Ensure that the cache directory is populated with content of zip
+
+Ensure that the cache directory is populated with content of zip. See Cache readme and bash scripts.
+
 Run: dotnet run
 When all updated packages are downloaded, Elm files are generated
 Verify that the ElmDocs files have been generated
